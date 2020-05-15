@@ -41,6 +41,7 @@ public class Util {
 
     public static final String ID = "id";
     public static final String TYPE_USER = "typeUser";
+    public static final String NOMBRE = "nombre";
 
     public static void guardarCredenciales(SharedPreferences prefs, int type, String id, String email, String pass){
 
@@ -68,7 +69,13 @@ public class Util {
         editor.apply();
     }
 
-    public static void signIn(final Activity activity, final Class<?> classT,final String id, final String email, String pass, final int type, final SharedPreferences prefs){
+    public static void signIn(final Activity activity,
+                              final Class<?> classT,
+                              final String id,
+                              final String email,
+                              String pass,
+                              final int type,
+                              final SharedPreferences prefs){
         mAuth.signInWithEmailAndPassword(email, pass)
                 .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
                     @Override

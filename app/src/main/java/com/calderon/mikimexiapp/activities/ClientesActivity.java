@@ -44,15 +44,14 @@ import static com.calderon.mikimexiapp.utils.Util.*;
 
 public class ClientesActivity extends AppCompatActivity {
 
-    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private FirebaseFirestore db  = FirebaseFirestore.getInstance();
+    private CollectionReference tiendasRef  = db.collection("tiendas");
     private DocumentReference doc;
-
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private CollectionReference tiendasRef = db.collection("tiendas");
 
     private SharedPreferences prefs;
 
     private MyAdapterTiendas myAdapterTiendas;
+    private Toolbar toolbar;
 
     private String email;
     private String nombre;
@@ -62,11 +61,12 @@ public class ClientesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_clientes);
 
-        final Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
 
-        email = (mAuth.getCurrentUser().getEmail());
         prefs = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
         setRecyclerView();
+
+        email = getIdUser(prefs);
 
         doc = db.document("clientes/" + email);
         doc.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
@@ -80,6 +80,7 @@ public class ClientesActivity extends AppCompatActivity {
                 }
             }
         });
+
 
         setSupportActionBar(toolbar);
     }
@@ -106,13 +107,13 @@ public class ClientesActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
                 if(action == PEDIDO){
-                    Map<String, Object> city = new HashMap<>();
-                    city.put("name", "Los Angeles");
-                    city.put("state", "CA");
-                    city.put("country", "USA");
+                    Map<String, Object> pedido = new HashMap<>();
+                    pedido.put("descripción", "2 kl de carne de Res");
+                    pedido.put("cliente", nombre);
+                    pedido.put("direccion","Av allende No.34");
 
                     db.collection("vendedores").document(tienda.getId()).collection("pedidos").document(email)
-                            .set(city)
+                            .set(pedido)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
@@ -164,13 +165,7 @@ public class ClientesActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        myAdapterTiendas.stopListening();
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        myAdapterTiendas.startListening();
+       // myAdapterTiendas.stopListening();
     }
 
 }

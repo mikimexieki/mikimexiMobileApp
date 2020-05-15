@@ -57,7 +57,7 @@ public class MyAdapterTiendas extends FirestoreRecyclerAdapter<Tienda ,MyAdapter
         });
     }
 
-    public class ViewHolder  extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder{
         TextView nombre;
         TextView dom;
         TextView horario;
