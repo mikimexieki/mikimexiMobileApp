@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">MikimexiApp</string>
+    <string name="title_activity_login_cliente">LoginCliente</string>
+    <string name="title_activity_clientes">ClientesActivity</string>
+    <string name="title_activity_vendedores">VendedoresActivity</string>
+    <string name="signUp">¿No tienes cuenta? Registrate Aquí.</string>
+</resources>
