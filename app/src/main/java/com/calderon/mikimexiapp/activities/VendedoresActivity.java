@@ -1,48 +1,47 @@
 package com.calderon.mikimexiapp.activities;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.lifecycle.LifecycleObserver;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.calderon.mikimexiapp.R;
 import com.calderon.mikimexiapp.adapters.MyAdapterPedidosVendedores;
 import com.calderon.mikimexiapp.models.PedidoV;
+import com.calderon.mikimexiapp.models.Tienda;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import static com.calderon.mikimexiapp.utils.Util.getIdUser;
-import static com.calderon.mikimexiapp.utils.Util.signOut;
+import static com.calderon.mikimexiapp.utils.Util.*;
 
 public class VendedoresActivity extends AppCompatActivity {
 
     private SharedPreferences prefs;
-    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private DocumentReference doc;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -51,9 +50,10 @@ public class VendedoresActivity extends AppCompatActivity {
     private String id;
     private String nombreTienda;
 
-    private List<String> list = new ArrayList<>();
     private MyAdapterPedidosVendedores myAdapterPedidosVendedores;
     private Toolbar toolbar;
+
+    private AlertDialog.Builder builder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,39 +63,28 @@ public class VendedoresActivity extends AppCompatActivity {
         prefs = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
 
         id = getIdUser(prefs);
-        enviarNombre();
+        pedidosRef = db.collection("vendedores").document(id).collection("pedidos");
+        nombreTienda = getNombre(prefs);
+        toolbar.setTitle("Bienvenido "+nombreTienda);
         setSupportActionBar(toolbar);
 
-        pedidosRef = db.collection("vendedores").document(id).collection("pedidos");
-        /*pedidosRef.get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                list.add(document.getId());
-                            }
-                        } else {
-                           Log.d("Testing!!!!", "Error getting documents: ", task.getException());
-                        }
-                    }
-                });*/
+        Toast.makeText(this, ""+nombreTienda, Toast.LENGTH_SHORT).show();
 
         setRecyclerView();
     }
 
     private void setRecyclerView() {
+        pedidosRef = db.collection("vendedores").document(id).collection("pedidos");
         Query query = pedidosRef.orderBy("destinatario", Query.Direction.DESCENDING);
-
         FirestoreRecyclerOptions<PedidoV> options = new FirestoreRecyclerOptions.Builder<PedidoV>()
                 .setQuery(query, PedidoV.class)
                 .build();
 
-
         myAdapterPedidosVendedores = new MyAdapterPedidosVendedores(options, new MyAdapterPedidosVendedores.OnItemClickListener() {
             @Override
             public void onItemClick(PedidoV pedidoV, int position) {
-                Toast.makeText(VendedoresActivity.this, pedidoV.getDestinatario(), Toast.LENGTH_SHORT).show();
+               showPialogPedidoV(pedidoV).show();
+
             }
         });
 
@@ -105,22 +94,6 @@ public class VendedoresActivity extends AppCompatActivity {
         recyclerView.setAdapter(myAdapterPedidosVendedores);
 
     }
-
-    private void enviarNombre(){
-        doc = db.document("vendedores/"+id);
-        doc.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                if (e != null)
-                    Toast.makeText(VendedoresActivity.this, "Error while loading!", Toast.LENGTH_SHORT).show();
-                else {
-                    nombreTienda = documentSnapshot.getString("nombre");
-                    toolbar.setTitle(nombreTienda);
-                }
-            }
-        });
-    }
-
 
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.sign_out, menu);
@@ -138,4 +111,65 @@ public class VendedoresActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        this.myAdapterPedidosVendedores.startListening();
+    }
+
+    private AlertDialog showPialogPedidoV(final PedidoV pedidoV){
+        builder = new AlertDialog.Builder(VendedoresActivity.this);
+        builder.setTitle("Enviar Pedido");
+
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_pedido_vendedores, null);
+
+        final EditText prec = dialogView.findViewById(R.id.dialog_precio);
+        Button confirm = dialogView.findViewById(R.id.dialog_confirmV);
+        builder.setView(dialogView);
+
+        final AlertDialog dialog = builder.create();
+
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String precio = prec.getText().toString()+"";
+                if(!precio.isEmpty()) {
+                    pedidoV(pedidoV, precio);
+                    dialog.dismiss();
+                }
+                else
+                    Toast.makeText(VendedoresActivity.this, "Ingrese los campos solicitados", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        dialog.setCancelable(true);
+        builder.setCancelable(true);
+        return dialog;
+    }
+
+    private void pedidoV(PedidoV pedidoV, String precio){
+        Map<String, Object> pedido = new HashMap<>();
+        pedido.put("id",id);
+        pedido.put("descripcion", pedidoV.getDescripcion());
+        pedido.put("precio",precio );
+        pedido.put("direccion", pedidoV.getDireccion());
+
+        doc = db.collection("clientes").document(pedidoV.getId()).collection("pedidos").document(id);
+        doc.set(pedido)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("Testing!!!!", "DocumentSnapshot successfully written!");
+                        Toast.makeText(VendedoresActivity.this, "Pedido Enviado", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(VendedoresActivity.this, "Error "+e, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+    }
 }

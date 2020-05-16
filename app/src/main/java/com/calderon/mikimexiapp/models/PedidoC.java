@@ -2,15 +2,25 @@ package com.calderon.mikimexiapp.models;
 
 public class PedidoC {
 
-    public String descripcion;
-    public String precio;
+    private String id;
+    private String descripcion;
+    private String precio;
 
     public PedidoC() {
     }
 
-    public PedidoC(String descripcion, String precio) {
+    public PedidoC(String id, String descripcion, String precio) {
+        this.id = id;
         this.descripcion = descripcion;
         this.precio = precio;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getDescripcion() {

@@ -2,17 +2,27 @@ package com.calderon.mikimexiapp.models;
 
 public class PedidoV {
 
-    public String descripcion;
-    public String direccion;
-    public String destinatario;
+    private String id;
+    private String descripcion;
+    private String direccion;
+    private String destinatario;
 
     public PedidoV() {
     }
 
-    public PedidoV(String descripcion, String direccion, String destinatario) {
+    public PedidoV(String id, String descripcion, String direccion, String destinatario) {
+        this.id = id;
         this.descripcion = descripcion;
         this.direccion = direccion;
         this.destinatario = destinatario;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getDescripcion() {

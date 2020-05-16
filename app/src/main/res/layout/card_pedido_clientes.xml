@@ -23,11 +23,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight=".4"
+                android:textStyle="bold"
                 android:text="Descripción"/>
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight=".6"
+                android:text="2 kl de carne de res"
                 android:id="@+id/pedidoDescripcionCliente"/>
         </LinearLayout>
 
@@ -40,11 +42,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight=".4"
+                android:textStyle="bold"
                 android:text="Precio"/>
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight=".6"
+                android:text="$250"
+                android:textColor="@color/green_primary"
                 android:id="@+id/pedidoPrecioCliente"/>
         </LinearLayout>
 
