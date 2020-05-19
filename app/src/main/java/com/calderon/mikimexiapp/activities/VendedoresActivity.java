@@ -22,19 +22,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.calderon.mikimexiapp.R;
 import com.calderon.mikimexiapp.adapters.MyAdapterPedidosVendedores;
 import com.calderon.mikimexiapp.models.PedidoV;
-import com.calderon.mikimexiapp.models.Tienda;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.calderon.mikimexiapp.utils.Util.*;
@@ -42,6 +38,7 @@ import static com.calderon.mikimexiapp.utils.Util.*;
 public class VendedoresActivity extends AppCompatActivity {
 
     private SharedPreferences prefs;
+    private SharedPreferences prefsEnviado;
     private DocumentReference doc;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -61,6 +58,7 @@ public class VendedoresActivity extends AppCompatActivity {
         setContentView(R.layout.activity_vendedores);
         toolbar = findViewById(R.id.toolbar);
         prefs = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
+        prefsEnviado = getSharedPreferences("pedidoEnviado",Context.MODE_PRIVATE);
 
         id = getIdUser(prefs);
         pedidosRef = db.collection("vendedores").document(id).collection("pedidos");
@@ -83,10 +81,11 @@ public class VendedoresActivity extends AppCompatActivity {
         myAdapterPedidosVendedores = new MyAdapterPedidosVendedores(options, new MyAdapterPedidosVendedores.OnItemClickListener() {
             @Override
             public void onItemClick(PedidoV pedidoV, int position) {
-               showPialogPedidoV(pedidoV).show();
-
+                if(!pedidoV.isEnviando())
+                    showPialogPedidoV(pedidoV).show();
+                Log.i("$$$$$$$$$$$$$$$$$$$$$",pedidoV.toString());
             }
-        });
+        },this);
 
         RecyclerView recyclerView = findViewById(R.id.rv_pedidosV);
         recyclerView.setHasFixedSize(true);
@@ -96,7 +95,7 @@ public class VendedoresActivity extends AppCompatActivity {
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.sign_out, menu);
+        getMenuInflater().inflate(R.menu.menu_item, menu);
         return true;
     }
 
@@ -105,6 +104,9 @@ public class VendedoresActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.sign_out:
                 signOut(VendedoresActivity.this, prefs);
+                return true;
+            case R.id.sync:
+                onResume();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -154,6 +156,7 @@ public class VendedoresActivity extends AppCompatActivity {
         pedido.put("descripcion", pedidoV.getDescripcion());
         pedido.put("precio",precio );
         pedido.put("direccion", pedidoV.getDireccion());
+        pedido.put("email",pedidoV.getId());
 
         doc = db.collection("clientes").document(pedidoV.getId()).collection("pedidos").document(id);
         doc.set(pedido)
@@ -171,5 +174,10 @@ public class VendedoresActivity extends AppCompatActivity {
                     }
                 });
 
+        pedidoV.setEnviando(true);
+        SharedPreferences.Editor editor = prefsEnviado.edit();
+        editor.putBoolean(pedidoV.getId(),true);
+        editor.apply();
+        myAdapterPedidosVendedores.notifyDataSetChanged();
     }
 }

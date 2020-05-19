@@ -47,6 +47,7 @@ public class ClientesActivity extends AppCompatActivity {
     private DocumentReference doc;
 
     private SharedPreferences prefs;
+    private SharedPreferences prefsEnviado;
 
     private MyAdapterTiendas myAdapterTiendas;
     private MyAdapterPedidosClientes myAdapterPedidosClientes;
@@ -64,6 +65,7 @@ public class ClientesActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
 
         prefs = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
+        prefsEnviado = getSharedPreferences("pedidoEnviado",Context.MODE_PRIVATE);
         email = getIdUser(prefs);
         setRecyclerView();
 
@@ -82,11 +84,79 @@ public class ClientesActivity extends AppCompatActivity {
                 .setQuery(query, PedidoC.class)
                 .build();
 
-        myAdapterPedidosClientes = new MyAdapterPedidosClientes(options,null);
+        myAdapterPedidosClientes = new MyAdapterPedidosClientes(options, new MyAdapterPedidosClientes.OnItemClickListener() {
+            @Override
+            public void onItemClick(PedidoC pedidoC, int position) {
+
+                showConfirmdialog(pedidoC,position);
+                Log.i("¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿",pedidoC.toString());
+            }
+        });
         RecyclerView recyclerView = findViewById(R.id.rv_pedidos);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(myAdapterPedidosClientes);
+    }
+
+    private void showConfirmdialog(final PedidoC pedidoC, final int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Confirmar entrega de pedido");
+        builder.setMessage("¿Ya ha llegado su pedido?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Sí", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                borrarPedido(pedidoC,position);
+                Toast.makeText(getApplicationContext(), "Gracias por usar MikimexiApp", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+
+        builder.show();
+    }
+
+    private void borrarPedido(PedidoC pedidoC, int position) {
+        db.collection("clientes")
+                .document(email)
+                .collection("pedidos")
+                .document(pedidoC.getId())
+                .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("++++++++++++++++++++", "DocumentSnapshot successfully deleted!");
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("-----------------------", "Error deleting document", e);
+                    }
+                });
+        myAdapterPedidosClientes.notifyItemRemoved(position);
+        db.collection("vendedores")
+                .document(pedidoC.getId())
+                .collection("pedidos")
+                .document(email)
+                .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("++++++++++++++++++++", "DocumentSnapshot successfully deleted!");
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("-----------------------", "Error deleting document", e);
+                    }
+                });
+        SharedPreferences.Editor editor = prefsEnviado.edit();
+        editor.remove(pedidoC.getEmail());
+        editor.apply();
     }
 
     private void setRecyclerView() {
@@ -126,7 +196,7 @@ public class ClientesActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.sign_out, menu);
+        getMenuInflater().inflate(R.menu.menu_item, menu);
         return true;
     }
 
@@ -135,6 +205,12 @@ public class ClientesActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.sign_out:
                 signOut(ClientesActivity.this,prefs);
+                return true;
+            case R.id.sync:
+                //onRestart();
+                onResume();
+                //myAdapterPedidosClientes.startListening();
+                Toast.makeText(this, "Dashboard actualizado", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -193,8 +269,8 @@ public class ClientesActivity extends AppCompatActivity {
         pedido.put("descripcion", decripcion);
         pedido.put("destinatario", nombre);
         pedido.put("direccion",domicilio);
-
-        Log.i("#######################", nombre);
+        pedido.put("rfc",tienda.getId());
+        pedido.put("enviando",false);
 
         db.collection("vendedores").document(tienda.getId()).collection("pedidos").document(email)
                 .set(pedido)

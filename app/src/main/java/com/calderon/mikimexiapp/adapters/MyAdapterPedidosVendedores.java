@@ -1,8 +1,12 @@
 package com.calderon.mikimexiapp.adapters;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,15 +21,18 @@ public class MyAdapterPedidosVendedores extends FirestoreRecyclerAdapter<PedidoV
 
     private OnItemClickListener listener;
 
+    private SharedPreferences sp;
+
     /**
      * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
      * FirestoreRecyclerOptions} for configuration options.
      *
      * @param options
      */
-    public MyAdapterPedidosVendedores(@NonNull FirestoreRecyclerOptions<PedidoV> options, OnItemClickListener listener) {
+    public MyAdapterPedidosVendedores(@NonNull FirestoreRecyclerOptions<PedidoV> options, OnItemClickListener listener, Activity activity) {
         super(options);
         this.listener = listener;
+        sp = activity.getSharedPreferences("pedidoEnviado", Context.MODE_PRIVATE);
     }
 
     @NonNull
@@ -46,6 +53,10 @@ public class MyAdapterPedidosVendedores extends FirestoreRecyclerAdapter<PedidoV
                 listener.onItemClick(pedidoV,i);
             }
         });
+        pedidoV.setEnviando(sp.getBoolean(pedidoV.getId(),false));
+        if(pedidoV.isEnviando()){
+            viewHolder.icon.setImageResource(R.drawable.ic_local_shipping_black_24dp);
+        }
     }
 
 
@@ -54,6 +65,7 @@ public class MyAdapterPedidosVendedores extends FirestoreRecyclerAdapter<PedidoV
         TextView descripcion;
         TextView direccion;
         TextView destinatario;
+        ImageView icon;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -61,7 +73,7 @@ public class MyAdapterPedidosVendedores extends FirestoreRecyclerAdapter<PedidoV
             descripcion = itemView.findViewById(R.id.pedidoDescripcion);
             direccion = itemView.findViewById(R.id.pedidoDireccion);
             destinatario = itemView.findViewById(R.id.pedidoID);
-
+            icon = itemView.findViewById(R.id.sending_icon);
         }
     }
 

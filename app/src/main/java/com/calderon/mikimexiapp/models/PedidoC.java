@@ -5,6 +5,8 @@ public class PedidoC {
     private String id;
     private String descripcion;
     private String precio;
+    private String email;
+
 
     public PedidoC() {
     }
@@ -39,11 +41,21 @@ public class PedidoC {
         this.precio = precio;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     @Override
     public String toString() {
         return "PedidoC{" +
-                "descripcion='" + descripcion + '\'' +
+                "id='" + id + '\'' +
+                ", descripcion='" + descripcion + '\'' +
                 ", precio='" + precio + '\'' +
+                ", email='" + email + '\'' +
                 '}';
     }
 }

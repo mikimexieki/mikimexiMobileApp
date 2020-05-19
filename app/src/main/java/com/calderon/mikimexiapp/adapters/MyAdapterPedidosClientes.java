@@ -1,5 +1,8 @@
 package com.calderon.mikimexiapp.adapters;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +20,6 @@ public class MyAdapterPedidosClientes extends FirestoreRecyclerAdapter<PedidoC, 
 
     private OnItemClickListener listener;
 
-
     /**
      * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
      * FirestoreRecyclerOptions} for configuration options.
@@ -27,6 +29,7 @@ public class MyAdapterPedidosClientes extends FirestoreRecyclerAdapter<PedidoC, 
     public MyAdapterPedidosClientes(@NonNull FirestoreRecyclerOptions<PedidoC> options, OnItemClickListener listener) {
         super(options);
         this.listener = listener;
+
     }
 
     @NonNull
@@ -38,9 +41,15 @@ public class MyAdapterPedidosClientes extends FirestoreRecyclerAdapter<PedidoC, 
 
 
     @Override
-    protected void onBindViewHolder(@NonNull ViewHolder viewHolder, int i, @NonNull PedidoC pedidoC) {
+    protected void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i, @NonNull final PedidoC pedidoC) {
         viewHolder.descripcion.setText(pedidoC.getDescripcion());
         viewHolder.precio.setText("$"+pedidoC.getPrecio());
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onItemClick(pedidoC,i);
+            }
+        });
     }
 
 

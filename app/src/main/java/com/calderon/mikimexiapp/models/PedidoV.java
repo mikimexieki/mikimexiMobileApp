@@ -6,6 +6,8 @@ public class PedidoV {
     private String descripcion;
     private String direccion;
     private String destinatario;
+    private boolean enviando;
+    private String rfc;
 
     public PedidoV() {
     }
@@ -49,12 +51,31 @@ public class PedidoV {
         this.destinatario = destinatario;
     }
 
+    public String getRfc() {
+        return rfc;
+    }
+
+    public void setRfc(String rfc) {
+        this.rfc = rfc;
+    }
+
+    public boolean isEnviando() {
+        return enviando;
+    }
+
+    public void setEnviando(boolean enviando) {
+        this.enviando = enviando;
+    }
+
     @Override
     public String toString() {
         return "PedidoV{" +
-                "descripcion='" + descripcion + '\'' +
+                "id='" + id + '\'' +
+                ", descripcion='" + descripcion + '\'' +
                 ", direccion='" + direccion + '\'' +
                 ", destinatario='" + destinatario + '\'' +
+                ", enviando=" + enviando +
+                ", rfc='" + rfc + '\'' +
                 '}';
     }
 }

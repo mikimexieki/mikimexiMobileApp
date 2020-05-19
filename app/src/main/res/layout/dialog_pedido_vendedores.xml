@@ -43,6 +43,9 @@
         android:id="@+id/dialog_confirmV"
         android:textColor="@color/white"
         android:textSize="18sp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:drawableRight="@drawable/ic_check"
         android:background="@color/orange_primary"
         android:text="Confirmar"
         />

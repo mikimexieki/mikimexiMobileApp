@@ -3,10 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/sync"
+        android:title="Actualizar"
+        android:icon="@drawable/ic_sync"
+        app:showAsAction="always"/>
+    <item
         android:id="@+id/sign_out"
         android:title="Cerrar Sesión"
         android:icon="@drawable/ic_sign_out"
         app:showAsAction="always"
         />
+
+
+
 
 </menu>
