@@ -7,16 +7,20 @@ public class PedidoV {
     private String direccion;
     private String destinatario;
     private boolean enviando;
+    private String precio;
     private String rfc;
 
     public PedidoV() {
     }
 
-    public PedidoV(String id, String descripcion, String direccion, String destinatario) {
+    public PedidoV(String id, String descripcion, String direccion, String destinatario, boolean enviando, String precio, String rfc) {
         this.id = id;
         this.descripcion = descripcion;
         this.direccion = direccion;
         this.destinatario = destinatario;
+        this.enviando = enviando;
+        this.precio = precio;
+        this.rfc = rfc;
     }
 
     public String getId() {
@@ -67,6 +71,14 @@ public class PedidoV {
         this.enviando = enviando;
     }
 
+    public String getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(String precio) {
+        this.precio = precio;
+    }
+
     @Override
     public String toString() {
         return "PedidoV{" +
@@ -75,6 +87,7 @@ public class PedidoV {
                 ", direccion='" + direccion + '\'' +
                 ", destinatario='" + destinatario + '\'' +
                 ", enviando=" + enviando +
+                ", precio='" + precio + '\'' +
                 ", rfc='" + rfc + '\'' +
                 '}';
     }

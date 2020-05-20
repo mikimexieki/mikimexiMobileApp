@@ -33,6 +33,10 @@ public class SplashActivity extends AppCompatActivity {
                case VENDEDORES:
                    startActivity(new Intent(this, VendedoresActivity.class));
                    break;
+
+               case REPARTIDORES:
+                   startActivity(new Intent(this, RepartidorActivity.class));
+                   break;
                default:
                    startActivity(new Intent(this, MainActivity.class));
 

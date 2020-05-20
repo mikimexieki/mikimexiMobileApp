@@ -66,9 +66,8 @@ public class VendedoresActivity extends AppCompatActivity {
         toolbar.setTitle("Bienvenido "+nombreTienda);
         setSupportActionBar(toolbar);
 
-        Toast.makeText(this, ""+nombreTienda, Toast.LENGTH_SHORT).show();
-
         setRecyclerView();
+
     }
 
     private void setRecyclerView() {
@@ -175,8 +174,10 @@ public class VendedoresActivity extends AppCompatActivity {
                 });
 
         pedidoV.setEnviando(true);
+        pedidoV.setPrecio(precio);
         SharedPreferences.Editor editor = prefsEnviado.edit();
         editor.putBoolean(pedidoV.getId(),true);
+        editor.putString("precio",precio);
         editor.apply();
         myAdapterPedidosVendedores.notifyDataSetChanged();
     }

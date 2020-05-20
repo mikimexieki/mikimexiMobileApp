@@ -208,7 +208,8 @@ public class ClientesActivity extends AppCompatActivity {
                 return true;
             case R.id.sync:
                 //onRestart();
-                onResume();
+                onStop();
+                onRestart();
                 //myAdapterPedidosClientes.startListening();
                 Toast.makeText(this, "Dashboard actualizado", Toast.LENGTH_SHORT).show();
                 return true;
@@ -271,6 +272,7 @@ public class ClientesActivity extends AppCompatActivity {
         pedido.put("direccion",domicilio);
         pedido.put("rfc",tienda.getId());
         pedido.put("enviando",false);
+        pedido.put("precio","");
 
         db.collection("vendedores").document(tienda.getId()).collection("pedidos").document(email)
                 .set(pedido)

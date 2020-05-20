@@ -4,4 +4,5 @@
     <string name="title_activity_clientes">ClientesActivity</string>
     <string name="title_activity_vendedores">VendedoresActivity</string>
     <string name="signUp">¿No tienes cuenta? Registrate Aquí.</string>
+    <string name="title_activity_repartidor">RepartidorActivity</string>
 </resources>

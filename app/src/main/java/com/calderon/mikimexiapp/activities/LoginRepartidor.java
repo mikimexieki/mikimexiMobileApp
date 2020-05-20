@@ -1,5 +1,7 @@
 package com.calderon.mikimexiapp.activities;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,18 +12,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.calderon.mikimexiapp.R;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 
-import static com.calderon.mikimexiapp.utils.Util.CLIENTES;
-import static com.calderon.mikimexiapp.utils.Util.signIn;
-import static com.calderon.mikimexiapp.utils.Util.validateEditText;
+import static com.calderon.mikimexiapp.utils.Util.*;
 
-public class LoginCliente extends AppCompatActivity {
+public class LoginRepartidor extends AppCompatActivity {
 
     private TextInputEditText email;
     private TextInputEditText pass;
@@ -39,7 +37,7 @@ public class LoginCliente extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login_cliente);
+        setContentView(R.layout.activity_login_repartidor);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -63,33 +61,33 @@ public class LoginCliente extends AppCompatActivity {
         btnSingIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (validateEditText(emalLy, LoginCliente.this) && validateEditText(passLy, LoginCliente.this)) {
+                if (validateEditText(emalLy, LoginRepartidor.this) && validateEditText(passLy, LoginRepartidor.this)) {
                     String emailS = email.getText().toString();
                     String passS = pass.getText().toString();
-                    signIn(LoginCliente.this,ClientesActivity.class,emailS,emailS,passS,CLIENTES,prefs);
+                    signIn(LoginRepartidor.this,RepartidorActivity.class,emailS,emailS,passS,REPARTIDORES,prefs);
                 }
             }
         });
+
     }
 
     private void sendBind(){
-        email = findViewById(R.id.edit_email_clientes);
-        pass = findViewById(R.id.edit_pass_clientes);
+        email = findViewById(R.id.edit_email_repartidor);
+        pass = findViewById(R.id.edit_pass_repartidor);
 
-        emalLy = findViewById(R.id.layout_email_clientes);
-        passLy = findViewById(R.id.layout_pass_clientes);
+        emalLy = findViewById(R.id.layout_email_repartidor);
+        passLy = findViewById(R.id.layout_pass_repartidor);
 
-        btnSingIn = findViewById(R.id.btn_entrar_clientes);
+        btnSingIn = findViewById(R.id.btn_entrar_repartidor);
 
-        textView = findViewById(R.id.signUoClientes);
+        textView = findViewById(R.id.signUoRepartidor);
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent = new Intent(LoginCliente.this, MainActivity.class);
+        Intent intent = new Intent(LoginRepartidor.this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
-
 }

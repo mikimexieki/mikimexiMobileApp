@@ -5,11 +5,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.LoginCliente">
+    tools:context=".activities.LoginRepartidor">
 
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/layout_email_clientes"
+        android:id="@+id/layout_email_repartidor"
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_marginStart="16dp"
@@ -25,12 +25,11 @@
 
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_email_clientes"
+            android:id="@+id/edit_email_repartidor"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:focusable="true"
             android:hint="Correo Electronico"
-            android:inputType="textEmailAddress"
             android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -42,10 +41,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/cliente" />
+        app:srcCompat="@drawable/small_truck" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/layout_pass_clientes"
+        android:id="@+id/layout_pass_repartidor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -54,10 +53,10 @@
         app:passwordToggleEnabled="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layout_email_clientes">
+        app:layout_constraintTop_toBottomOf="@+id/layout_email_repartidor">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_pass_clientes"
+            android:id="@+id/edit_pass_repartidor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Contraseña"
@@ -66,7 +65,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
-        android:id="@+id/btn_entrar_clientes"
+        android:id="@+id/btn_entrar_repartidor"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -78,10 +77,10 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layout_pass_clientes" />
+        app:layout_constraintTop_toBottomOf="@+id/layout_pass_repartidor" />
 
     <TextView
-        android:id="@+id/signUoClientes"
+        android:id="@+id/signUoRepartidor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/signUp"
@@ -89,8 +88,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_entrar_clientes"
+        app:layout_constraintTop_toBottomOf="@+id/btn_entrar_repartidor"
         app:layout_constraintVertical_bias="0.765" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-

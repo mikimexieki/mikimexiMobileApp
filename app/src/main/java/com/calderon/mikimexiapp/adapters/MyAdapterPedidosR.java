@@ -3,7 +3,6 @@ package com.calderon.mikimexiapp.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +18,9 @@ import com.calderon.mikimexiapp.models.PedidoV;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
-import static com.calderon.mikimexiapp.utils.Util.*;
+import static com.calderon.mikimexiapp.utils.Util.VENDEDORES;
 
-public class MyAdapterPedidosVendedores extends FirestoreRecyclerAdapter<PedidoV, MyAdapterPedidosVendedores.ViewHolder> {
+public class MyAdapterPedidosR extends FirestoreRecyclerAdapter<PedidoV, MyAdapterPedidosR.ViewHolder> {
 
     private OnItemClickListener listener;
     private SharedPreferences sp;
@@ -32,7 +31,7 @@ public class MyAdapterPedidosVendedores extends FirestoreRecyclerAdapter<PedidoV
      *
      * @param options
      */
-    public MyAdapterPedidosVendedores(@NonNull FirestoreRecyclerOptions<PedidoV> options, OnItemClickListener listener, Activity activity) {
+    public MyAdapterPedidosR(@NonNull FirestoreRecyclerOptions<PedidoV> options, OnItemClickListener listener, Activity activity) {
         super(options);
         this.listener = listener;
         sp = activity.getSharedPreferences("pedidoEnviado", Context.MODE_PRIVATE);
@@ -58,8 +57,8 @@ public class MyAdapterPedidosVendedores extends FirestoreRecyclerAdapter<PedidoV
         });
         pedidoV.setEnviando(sp.getBoolean(pedidoV.getId(),false));
         pedidoV.setPrecio(sp.getString("precio",""));
-        if(pedidoV.isEnviando() ){
-            viewHolder.textSend.setText("Pedido enviado. $"+pedidoV.getPrecio());
+        if(pedidoV.isEnviando()){
+            viewHolder.textSend.setText("Pedido para enviar. $"+pedidoV.getPrecio());
             viewHolder.layout.setVisibility(View.VISIBLE);
             viewHolder.icon.setImageResource(R.drawable.ic_local_shipping_black_24dp);
         }else{

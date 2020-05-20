@@ -42,23 +42,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        Intent intent;
+        Intent intent = null;
         switch (v.getId()){
             case R.id.btnClientes:
                 intent = new Intent(MainActivity.this, LoginCliente.class);
-                startActivity(intent);
                 break;
             case R.id.btnVendedores:
                 intent = new Intent(MainActivity.this, LoginVendedor.class);
-                startActivity(intent);
                 break;
             case R.id.btnRepartidores:
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putString("TEST2","test2");
-                editor.apply();
+                intent = new Intent(MainActivity.this, LoginRepartidor.class);
                 break;
             default:
                 Toast.makeText(this, "Seleccione una Opción", Toast.LENGTH_SHORT).show();
         }
+        startActivity(intent);
+
     }
 }
