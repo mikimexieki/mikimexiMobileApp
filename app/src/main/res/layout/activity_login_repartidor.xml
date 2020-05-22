@@ -29,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:focusable="true"
-            android:hint="Licencia"
+            android:hint="Usuario"
             android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
 
