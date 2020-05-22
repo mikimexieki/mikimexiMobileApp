@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -27,7 +28,10 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 
 import java.util.HashMap;
@@ -39,10 +43,12 @@ public class VendedoresActivity extends AppCompatActivity {
 
     private SharedPreferences prefs;
     private SharedPreferences prefsEnviado;
+    private SharedPreferences dirSP;
     private DocumentReference doc;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference pedidosRef;
+    private CollectionReference contadorRef;
 
     private String id;
     private String nombreTienda;
@@ -59,6 +65,7 @@ public class VendedoresActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         prefs = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
         prefsEnviado = getSharedPreferences("pedidoEnviado",Context.MODE_PRIVATE);
+        dirSP = getSharedPreferences("direccion",Context.MODE_PRIVATE);
 
         id = getIdUser(prefs);
         pedidosRef = db.collection("vendedores").document(id).collection("pedidos");
@@ -80,6 +87,7 @@ public class VendedoresActivity extends AppCompatActivity {
         myAdapterPedidosVendedores = new MyAdapterPedidosVendedores(options, new MyAdapterPedidosVendedores.OnItemClickListener() {
             @Override
             public void onItemClick(PedidoV pedidoV, int position) {
+
                 if(!pedidoV.isEnviando())
                     showPialogPedidoV(pedidoV).show();
                 Log.i("$$$$$$$$$$$$$$$$$$$$$",pedidoV.toString());
@@ -150,6 +158,7 @@ public class VendedoresActivity extends AppCompatActivity {
     }
 
     private void pedidoV(PedidoV pedidoV, String precio){
+
         Map<String, Object> pedido = new HashMap<>();
         pedido.put("id",id);
         pedido.put("descripcion", pedidoV.getDescripcion());
@@ -162,7 +171,7 @@ public class VendedoresActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.d("Testing!!!!", "DocumentSnapshot successfully written!");
+                        Log.i("Testing!!!!", "DocumentSnapshot successfully written!");
                         Toast.makeText(VendedoresActivity.this, "Pedido Enviado", Toast.LENGTH_SHORT).show();
                     }
                 })
@@ -172,6 +181,49 @@ public class VendedoresActivity extends AppCompatActivity {
                         Toast.makeText(VendedoresActivity.this, "Error "+e, Toast.LENGTH_SHORT).show();
                     }
                 });
+
+        final String[] dirrecion = new String[1];
+
+        doc =  db.document("tiendas/"+id);
+        doc.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                dirrecion[0] = documentSnapshot.getString("direccion");
+                SharedPreferences.Editor editor = dirSP.edit();
+                editor.putString("direccion",dirrecion[0]);
+                editor.apply();
+
+            }
+        });
+        Log.i("·················",dirSP.getString("direccion",""));
+
+        String adds = dirSP.getString("direccion","");
+
+        Map<String, Object> pedidoR= new HashMap<>();
+        pedidoR.put("idV", id);
+        pedidoR.put("idC", pedidoV.getId());
+        pedidoR.put("destinatario",pedidoV.getDestinatario());
+        pedidoR.put("descripcion", pedidoV.getDescripcion());
+        pedidoR.put("precio",precio );
+        pedidoR.put("direccionTienda",adds);
+        pedidoR.put("direccionEntrega",pedidoV.getDireccion());
+
+
+        db.collection("pedidos").document().set(pedidoR)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void avoid) {
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(VendedoresActivity.this, "Error!", Toast.LENGTH_SHORT).show();
+                        Log.i("XXXXXXXXXXXXX", e.toString());
+                    }
+                });
+
+        SharedPreferences.Editor ed = dirSP.edit();
 
         pedidoV.setEnviando(true);
         pedidoV.setPrecio(precio);

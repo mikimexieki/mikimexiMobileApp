@@ -87,7 +87,6 @@ public class ClientesActivity extends AppCompatActivity {
         myAdapterPedidosClientes = new MyAdapterPedidosClientes(options, new MyAdapterPedidosClientes.OnItemClickListener() {
             @Override
             public void onItemClick(PedidoC pedidoC, int position) {
-
                 showConfirmdialog(pedidoC,position);
                 Log.i("¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿",pedidoC.toString());
             }
@@ -154,6 +153,7 @@ public class ClientesActivity extends AppCompatActivity {
                         Log.w("-----------------------", "Error deleting document", e);
                     }
                 });
+
         SharedPreferences.Editor editor = prefsEnviado.edit();
         editor.remove(pedidoC.getEmail());
         editor.apply();
@@ -183,6 +183,7 @@ public class ClientesActivity extends AppCompatActivity {
                 }
                 if(action == PEDIDO){
                     showPialogPedidoC(tienda).show();
+                    Log.i("DDDDDDDDDDDDD","id:"+View.generateViewId());
                 }
             }
         });
@@ -272,7 +273,6 @@ public class ClientesActivity extends AppCompatActivity {
         pedido.put("direccion",domicilio);
         pedido.put("rfc",tienda.getId());
         pedido.put("enviando",false);
-        pedido.put("precio","");
 
         db.collection("vendedores").document(tienda.getId()).collection("pedidos").document(email)
                 .set(pedido)

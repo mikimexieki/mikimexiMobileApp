@@ -6,12 +6,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.calderon.mikimexiapp.R;
@@ -37,6 +39,8 @@ public class LoginVendedor extends AppCompatActivity {
 
     private Button btnSingIn;
 
+    private TextView textView;
+
     private FirebaseAuth mAuth;
     private DocumentReference doc;
     private FirebaseFirestore bd = FirebaseFirestore.getInstance();
@@ -58,6 +62,30 @@ public class LoginVendedor extends AppCompatActivity {
 
         rfcLy = findViewById(R.id.layout_rfc_vendedor);
         passLy = findViewById(R.id.layout_pass_vendedor);
+
+        textView = findViewById(R.id.signUoVendedor);
+
+        final SharedPreferences sp = getSharedPreferences("url",Context.MODE_PRIVATE);
+        db.collection("ruta").document("cliente").addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putString("vendedor",documentSnapshot.getString("url"));
+                editor.apply();
+            }
+        });
+
+        final String finalUrl = sp.getString("vendedor","");
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri webpage = Uri.parse(finalUrl);
+                Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intent);
+                }
+            }
+        });
 
         btnSingIn = findViewById(R.id.btn_entrar_vendedor);
         btnSingIn.setOnClickListener(new View.OnClickListener() {

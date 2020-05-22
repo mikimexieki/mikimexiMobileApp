@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -14,84 +13,81 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.calderon.mikimexiapp.R;
-import com.calderon.mikimexiapp.models.PedidoV;
+import com.calderon.mikimexiapp.models.PedidoR;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
-import static com.calderon.mikimexiapp.utils.Util.VENDEDORES;
+import static com.calderon.mikimexiapp.utils.Util.*;
 
-public class MyAdapterPedidosR extends FirestoreRecyclerAdapter<PedidoV, MyAdapterPedidosR.ViewHolder> {
+public class MyAdapterPedidosR extends FirestoreRecyclerAdapter<PedidoR, MyAdapterPedidosR.ViewHolder> {
 
     private OnItemClickListener listener;
-    private SharedPreferences sp;
-
+    private int tipo;
     /**
      * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
      * FirestoreRecyclerOptions} for configuration options.
      *
      * @param options
      */
-    public MyAdapterPedidosR(@NonNull FirestoreRecyclerOptions<PedidoV> options, OnItemClickListener listener, Activity activity) {
+
+
+    public MyAdapterPedidosR(@NonNull FirestoreRecyclerOptions<PedidoR> options, OnItemClickListener listener ,int tipo) {
         super(options);
         this.listener = listener;
-        sp = activity.getSharedPreferences("pedidoEnviado", Context.MODE_PRIVATE);
+        this.tipo = tipo;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_pedido_vendedores, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_repas, parent, false);
         return new ViewHolder(v);
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i, @NonNull final PedidoV pedidoV) {
-        viewHolder.destinatario.setText(pedidoV.getDestinatario());
-        viewHolder.direccion.setText(pedidoV.getDireccion());
-        viewHolder.descripcion.setText(pedidoV.getDescripcion());
+    protected void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i, @NonNull final PedidoR pedidoR) {
+        viewHolder.descripcion.setText(pedidoR.getDescripcion());
+        viewHolder.direccionTienda.setText(pedidoR.getDireccionTienda());
+        viewHolder.direccionEntrega.setText(pedidoR.getDireccionEntrega());
+        viewHolder.cliente.setText(pedidoR.getDestinatario());
+        viewHolder.precio.setText("$"+pedidoR.getPrecio());
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onItemClick(pedidoV,i);
+                listener.onItemClick(pedidoR,i);
             }
         });
-        pedidoV.setEnviando(sp.getBoolean(pedidoV.getId(),false));
-        pedidoV.setPrecio(sp.getString("precio",""));
-        if(pedidoV.isEnviando()){
-            viewHolder.textSend.setText("Pedido para enviar. $"+pedidoV.getPrecio());
-            viewHolder.layout.setVisibility(View.VISIBLE);
-            viewHolder.icon.setImageResource(R.drawable.ic_local_shipping_black_24dp);
-        }else{
-            viewHolder.textSend.setText("");
-            viewHolder.layout.setVisibility(View.GONE);
-        }
 
+        if(tipo==1)
+            viewHolder.layout.setVisibility(View.VISIBLE);
+        else
+            viewHolder.layout.setVisibility(View.GONE);
     }
 
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
         TextView descripcion;
-        TextView direccion;
-        TextView destinatario;
-        ImageView icon;
-        TextView textSend;
+        TextView direccionTienda;
+        TextView direccionEntrega;
+        TextView cliente;
+        TextView precio;
         LinearLayout layout;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            descripcion = itemView.findViewById(R.id.pedidoDescripcion);
-            direccion = itemView.findViewById(R.id.pedidoDireccion);
-            destinatario = itemView.findViewById(R.id.pedidoID);
-            icon = itemView.findViewById(R.id.sending_icon);
-            layout = itemView.findViewById(R.id.layout);
-            textSend = itemView.findViewById(R.id.txt_sending);
+            descripcion = itemView.findViewById(R.id.descripcionR);
+            direccionEntrega = itemView.findViewById(R.id.direccionEntrega);
+            direccionTienda = itemView.findViewById(R.id.direccionTienda);
+            cliente = itemView.findViewById(R.id.cliente);
+            precio = itemView.findViewById(R.id.precioRepa);
+            layout = itemView.findViewById(R.id.layoutAsignado);
         }
     }
 
     public interface  OnItemClickListener{
-        void onItemClick(PedidoV pedidoV, int position);
+        void onItemClick(PedidoR pedidoR, int position);
     }
 }
 

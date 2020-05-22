@@ -6,7 +6,7 @@
         android:id="@+id/sync"
         android:title="Actualizar"
         android:icon="@drawable/ic_sync"
-        app:showAsAction="always"/>
+        app:showAsAction="never"/>
     <item
         android:id="@+id/sign_out"
         android:title="Cerrar Sesión"

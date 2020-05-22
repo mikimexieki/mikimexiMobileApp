@@ -10,14 +10,19 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.calderon.mikimexiapp.R;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import static com.calderon.mikimexiapp.utils.Util.CLIENTES;
+import static com.calderon.mikimexiapp.utils.Util.db;
 import static com.calderon.mikimexiapp.utils.Util.signIn;
 import static com.calderon.mikimexiapp.utils.Util.validateEditText;
 
@@ -49,10 +54,21 @@ public class LoginCliente extends AppCompatActivity {
 
         textView.setPaintFlags(textView.getPaintFlags() |   Paint.UNDERLINE_TEXT_FLAG);
 
+        final SharedPreferences sp = getSharedPreferences("url",Context.MODE_PRIVATE);
+        db.collection("ruta").document("cliente").addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putString("cliente",documentSnapshot.getString("url"));
+                editor.apply();
+            }
+        });
+
+        final String finalUrl = sp.getString("cliente","");
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Uri webpage = Uri.parse("https://www.google.com.mx");
+                Uri webpage = Uri.parse(finalUrl);
                 Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivity(intent);

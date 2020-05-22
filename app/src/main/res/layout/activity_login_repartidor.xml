@@ -25,11 +25,11 @@
 
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_email_repartidor"
+            android:id="@+id/edit_lic_repartidor"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:focusable="true"
-            android:hint="Correo Electronico"
+            android:hint="Licencia"
             android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
 
